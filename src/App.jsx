@@ -10,6 +10,7 @@ import Result from "./pages/Result";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
+import Leaderboard from "./Components/Leaderboard";
 import React from "react";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext.jsx"; // Assuming you create this file
@@ -40,6 +41,7 @@ const AppContent = () => {
             <Route path="/quiz/:category/:subCategory?" element={<Quiz />} />
             <Route path="/result" element={<Result />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
           </Route>
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

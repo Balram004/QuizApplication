@@ -8,14 +8,22 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
 
+  const passwordValidations = {
+    length: password.length >= 8,
+    lowercase: /[a-z]/.test(password),
+    uppercase: /[A-Z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  };
+
   const validateForm = () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum eight characters, at least one letter and one number
 
     if (!emailRegex.test(email)) {
       newErrors.email = 'Invalid email address.';
     }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
 
     if (!passwordRegex.test(password)) {
       newErrors.password = 'Password must be at least 8 characters long and contain at least one number.';
@@ -96,6 +104,30 @@ const Signup = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             {errors.password && <p className="text-red-500 text-xs italic">{errors.password}</p>}
+            <div className="mt-2 text-sm text-gray-600">
+              <ul className="space-y-1">
+                <li className={`flex items-center ${passwordValidations.length ? 'text-green-600' : 'text-gray-500'}`}>
+                  {passwordValidations.length ? '✓' : '•'}
+                  <span className="ml-2">Minimum of 8 characters</span>
+                </li>
+                <li className={`flex items-center ${passwordValidations.lowercase ? 'text-green-600' : 'text-gray-500'}`}>
+                  {passwordValidations.lowercase ? '✓' : '•'}
+                  <span className="ml-2">One lowercase letter</span>
+                </li>
+                <li className={`flex items-center ${passwordValidations.uppercase ? 'text-green-600' : 'text-gray-500'}`}>
+                  {passwordValidations.uppercase ? '✓' : '•'}
+                  <span className="ml-2">One uppercase letter</span>
+                </li>
+                <li className={`flex items-center ${passwordValidations.number ? 'text-green-600' : 'text-gray-500'}`}>
+                  {passwordValidations.number ? '✓' : '•'}
+                  <span className="ml-2">One number</span>
+                </li>
+                <li className={`flex items-center ${passwordValidations.special ? 'text-green-600' : 'text-gray-500'}`}>
+                  {passwordValidations.special ? '✓' : '•'}
+                  <span className="ml-2">One special character</span>
+                </li>
+              </ul>
+            </div>
           </div>
           <div className="flex items-center justify-between">
             <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
