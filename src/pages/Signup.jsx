@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useAuth } from '../context/AuthContext';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const { login } = useAuth();
 
   const passwordValidations = {
     length: password.length >= 8,
@@ -45,9 +47,7 @@ const Signup = () => {
       toast.success('Signup successful! Please login.');
       navigate('/');
     } else {
-      if (!username || !email || !password) {
-        toast.warn('Please fill in all fields');
-      }
+      toast.warn('Please fill in all fields and ensure the password is valid.');
     }
   };
 
@@ -65,13 +65,13 @@ const Signup = () => {
 
         if (user) {
           // User already exists, just log them in
-          localStorage.setItem('quiz_current_user', JSON.stringify(user));
+          login(user);
         } else {
           // Create a new user
           user = { username: userInfo.name, email: userInfo.email, password: `google_auth_${userInfo.sub}` };
           users.push(user);
           localStorage.setItem('quiz_users', JSON.stringify(users));
-          localStorage.setItem('quiz_current_user', JSON.stringify(user));
+          login(user);
         }
         navigate('/home');
       } catch (error) {

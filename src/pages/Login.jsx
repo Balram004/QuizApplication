@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useAuth();
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -15,7 +17,7 @@ const Login = () => {
       const user = users.find(u => u.email === email && u.password === password);
 
       if (user) {
-        localStorage.setItem('quiz_current_user', JSON.stringify(user));
+        login(user);
         navigate('/home');
       } else {
         toast.error('Invalid credentials');
@@ -43,8 +45,8 @@ const Login = () => {
           users.push(user);
           localStorage.setItem('quiz_users', JSON.stringify(users));
         }
-
-        localStorage.setItem('quiz_current_user', JSON.stringify(user));
+        
+        login(user);
         navigate('/home');
       } catch (error) {
         console.error('Google login failed:', error);
