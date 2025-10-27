@@ -14,6 +14,7 @@ const Quiz = () => {
   const [isAnswered, setIsAnswered] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
   const [quizFinished, setQuizFinished] = useState(false);
+  const [userAnswers, setUserAnswers] = useState([]);
 
   useEffect(() => {
     let questionsForCategory = [];
@@ -23,6 +24,7 @@ const Quiz = () => {
       questionsForCategory = questions[category] || [];
     }
     setQuestionSet(questionsForCategory);
+    setUserAnswers(Array(questionsForCategory.length).fill(null));
     setCurrentQuestionIndex(0); // Reset on category change
   }, [category, subCategory]);
 
@@ -57,6 +59,10 @@ const Quiz = () => {
   }, [quizFinished]);
 
   const moveToNext = (selected) => {
+    const newUserAnswers = [...userAnswers];
+    newUserAnswers[currentQuestionIndex] = selected;
+    setUserAnswers(newUserAnswers);
+
     setTimeout(() => {
       const nextQuestionIndex = currentQuestionIndex + 1;
       if (nextQuestionIndex < questionSet.length) {
@@ -70,7 +76,13 @@ const Quiz = () => {
           finalScore += 1;
         }
         setQuizFinished(true);
-        navigate('/result', { state: { score: finalScore, total: questionSet.length, category: subCategory || category } });
+        navigate('/result', { state: { 
+          score: finalScore, 
+          total: questionSet.length, 
+          category: subCategory || category,
+          questions: questionSet,
+          userAnswers: newUserAnswers,
+        } });
       }
     }, 1500); // Wait 1.5 seconds before moving on
   };
@@ -104,11 +116,11 @@ const Quiz = () => {
               const isSelected = option === selectedOption;
               let buttonClass = 'bg-gray-200 hover:bg-gray-300';
 
-              if (isAnswered) {
+              if (isAnswered && isSelected) {
                 if (isCorrect) {
-                  buttonClass = 'bg-green-500'; // Correct answer
-                } else if (isSelected) {
-                  buttonClass = 'bg-red-500'; // User's incorrect choice
+                  buttonClass = 'bg-green-500 text-white'; // User's correct choice
+                } else {
+                  buttonClass = 'bg-red-500 text-white'; // User's incorrect choice
                 }
               }
               return (

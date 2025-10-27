@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 
 const Result = () => {
   const location = useLocation();
-  const { score, total, category } = location.state || { score: 0, total: 0, category: 'unknown' };
+  const { score, total, category, questions, userAnswers } = location.state || { score: 0, total: 0, category: 'unknown', questions: [], userAnswers: [] };
   const isMounted = useRef(false);
+  const [showReview, setShowReview] = useState(false);
 
   useEffect(() => {
     // Prevent effect from running twice in development with StrictMode
@@ -70,8 +71,39 @@ const Result = () => {
           <Link to="/home">
             <button className="px-6 py-3 text-lg font-bold text-white transition-colors bg-gray-500 rounded-lg hover:bg-gray-700">Go to Home</button>
           </Link>
+          {questions && questions.length > 0 && (
+            <button onClick={() => setShowReview(!showReview)} className="px-6 py-3 text-lg font-bold text-white transition-colors bg-purple-500 rounded-lg hover:bg-purple-700">
+              {showReview ? 'Hide Review' : 'Review Answers'}
+            </button>
+          )}
         </div>
       </div>
+
+      {showReview && (
+        <div className="mt-8 w-full max-w-3xl">
+          <h2 className="text-3xl font-bold text-center text-white mb-6">Answer Review</h2>
+          <div className="space-y-6">
+            {questions.map((question, index) => (
+              <div key={index} className="bg-white/50 backdrop-blur-lg p-6 rounded-xl shadow-lg">
+                <p className="text-xl font-semibold text-black mb-4">{index + 1}. {question.question}</p>
+                <div className="space-y-2">
+                  {question.options.map((option, i) => {
+                    const isCorrect = option === question.answer;
+                    const isUserChoice = option === userAnswers[index];
+                    let optionClass = 'bg-gray-200';
+                    if (isCorrect) {
+                      optionClass = 'bg-green-500 text-white';
+                    } else if (isUserChoice) {
+                      optionClass = 'bg-red-500 text-white';
+                    }
+                    return <div key={i} className={`p-3 rounded-lg ${optionClass}`}>{option}</div>;
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
