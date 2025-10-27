@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -40,23 +42,49 @@ const Signup = () => {
       const newUser = { username, email, password };
       users.push(newUser);
       localStorage.setItem('quiz_users', JSON.stringify(users));
-      alert('Signup successful! Please login.');
+      toast.success('Signup successful! Please login.');
       navigate('/');
     } else {
       if (!username || !email || !password) {
-        alert('Please fill in all fields');
+        toast.warn('Please fill in all fields');
       }
     }
   };
 
-  const handleGoogleSignup = () => {
-    // Yahan Google signup ka logic aayega
-    alert('Continue with Google - Feature coming soon!');
-  };
+  const handleGoogleSignup = useGoogleLogin({
+    ux_mode: 'redirect',
+    onSuccess: async (tokenResponse) => {
+      try {
+        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        });
+        const userInfo = await userInfoResponse.json();
+
+        const users = JSON.parse(localStorage.getItem('quiz_users')) || [];
+        let user = users.find(u => u.email === userInfo.email);
+
+        if (user) {
+          // User already exists, just log them in
+          localStorage.setItem('quiz_current_user', JSON.stringify(user));
+        } else {
+          // Create a new user
+          user = { username: userInfo.name, email: userInfo.email, password: `google_auth_${userInfo.sub}` };
+          users.push(user);
+          localStorage.setItem('quiz_users', JSON.stringify(users));
+          localStorage.setItem('quiz_current_user', JSON.stringify(user));
+        }
+        navigate('/home');
+      } catch (error) {
+        console.error('Google signup failed:', error);
+        toast.error('Google signup failed. Please try again.');
+      }
+    },
+    onError: () => toast.error('Google Signup Failed'),
+  });
 
   const handleMobileSignup = () => {
     // Yahan Mobile number signup ka logic aayega
-    alert('Continue with Mobile Number - Feature coming soon!');
+    toast.info('Continue with Mobile Number - Feature coming soon!');
   };
 
   return (

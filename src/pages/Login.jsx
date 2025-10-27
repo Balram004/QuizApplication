@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,21 +18,45 @@ const Login = () => {
         localStorage.setItem('quiz_current_user', JSON.stringify(user));
         navigate('/home');
       } else {
-        alert('Invalid credentials');
+        toast.error('Invalid credentials');
       }
     } else {
-      alert('Please fill in all fields');
+      toast.warn('Please fill in all fields');
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Yahan Google login ka logic aayega
-    alert('Continue with Google - Feature coming soon!');
-  };
+  const handleGoogleLogin = useGoogleLogin({
+    ux_mode: 'redirect',
+    onSuccess: async (tokenResponse) => {
+      try {
+        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        });
+        const userInfo = await userInfoResponse.json();
+
+        const users = JSON.parse(localStorage.getItem('quiz_users')) || [];
+        let user = users.find(u => u.email === userInfo.email);
+
+        if (!user) {
+          // Auto-signup if user doesn't exist
+          user = { username: userInfo.name, email: userInfo.email, password: `google_auth_${userInfo.sub}` };
+          users.push(user);
+          localStorage.setItem('quiz_users', JSON.stringify(users));
+        }
+
+        localStorage.setItem('quiz_current_user', JSON.stringify(user));
+        navigate('/home');
+      } catch (error) {
+        console.error('Google login failed:', error);
+        toast.error('Google login failed. Please try again.');
+      }
+    },
+    onError: () => toast.error('Google Login Failed'),
+  });
 
   const handleMobileLogin = () => {
     // Yahan Mobile number login ka logic aayega
-    alert('Continue with Mobile Number - Feature coming soon!');
+    toast.info('Continue with Mobile Number - Feature coming soon!');
   };
 
   return (
