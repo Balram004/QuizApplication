@@ -27,25 +27,43 @@ const Profile = () => {
   }
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-4xl font-bold mb-4">Profile</h1>
-      <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
-        <p className="text-xl"><span className="font-bold">Username:</span> {user.username}</p>
-        <p className="text-xl"><span className="font-bold">Email:</span> {user.email}</p>
+    <div className="min-h-screen container mx-auto p-4 sm:p-8">
+      <div className="bg-white/50 backdrop-blur-lg p-6 rounded-xl shadow-2xl mb-8">
+        <h1 className="text-4xl font-bold mb-4 text-black">Profile</h1>
+        <div className="text-xl text-gray-800">
+          <p><span className="font-bold">Username:</span> {user.username}</p>
+          <p><span className="font-bold">Email:</span> {user.email}</p>
+        </div>
       </div>
 
-      <h2 className="text-3xl font-bold mb-4">Quiz History</h2>
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <h2 className="text-3xl font-bold mb-4 text-white">Quiz History</h2>
+      <div className="bg-white/50 backdrop-blur-lg p-6 rounded-xl shadow-2xl">
         {results.length > 0 ? (
-          <ul className="space-y-4">
-            {results.map((result, index) => (
-              <li key={index} className="p-4 border rounded-lg">
-                <p className="font-bold text-lg capitalize">Category: {result.category}</p>
-                <p>Score: {result.score} / {result.total}</p>
-                <p className="text-sm text-gray-500">Date: {new Date(result.date).toLocaleString()}</p>
-              </li>
-            ))}
-          </ul>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {results.map((result, index) => {
+              const percentage = result.total > 0 ? (result.score / result.total) * 100 : 0;
+              let progressColor = "bg-red-500";
+              if (percentage >= 80) {
+                progressColor = "bg-green-500";
+              } else if (percentage >= 50) {
+                progressColor = "bg-yellow-500";
+              }
+              return (
+                <div key={index} className="bg-white/70 p-4 rounded-lg shadow-lg flex flex-col justify-between">
+                  <div>
+                    <p className="font-bold text-lg capitalize text-black">{result.category}</p>
+                    <p className="text-sm text-gray-600 mb-2">{new Date(result.date).toLocaleString()}</p>
+                    <p className="text-gray-800 font-semibold">Score: {result.score} / {result.total}</p>
+                  </div>
+                  <div className="mt-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div className={`${progressColor} h-2.5 rounded-full`} style={{ width: `${percentage}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         ) : (
           <p>You have not completed any quizzes yet.</p>
         )}
