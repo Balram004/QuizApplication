@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import React from "react";
+import { AuthProvider } from "./context/AuthContext.jsx"; // Assuming you create this file
 
 const AppContent = () => {
   const location = useLocation();
@@ -21,9 +22,9 @@ const AppContent = () => {
       {showNav && <Nav />}
       <Routes>
         <Route path="/home" element={<Home />} />
-        <Route path="/About" element={<About />} />
-        <Route path="/Contact" element={<Contact />} />
-        <Route path="/Service" element={<Service />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/service" element={<Service />} />
         <Route path="/select-category" element={<CategorySelection />} />
         <Route path="/quiz/:category" element={<Quiz />} />
         <Route path="/result" element={<Result />} />
@@ -39,7 +40,9 @@ const App = () => {
   return (
     <div>
       <BrowserRouter>
-        <AppContent />
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
       </BrowserRouter>
     </div>
   )
