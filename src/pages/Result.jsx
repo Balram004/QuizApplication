@@ -25,16 +25,16 @@ const Result = () => {
   }, [score, total, category]);
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center p-4 text-center">
-      <div className="relative z-10 bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-4xl font-bold text-black mb-4">Quiz Completed!</h1>
-        <p className="text-2xl text-gray-700 mb-6">You scored {score} out of {total}</p>
+    <div className="relative flex flex-col items-center justify-center min-h-screen p-4 text-center">
+      <div className="relative z-10 p-8 bg-white rounded-lg shadow-lg">
+        <h1 className="mb-4 text-4xl font-bold text-black">Quiz Completed!</h1>
+        <p className="mb-6 text-2xl text-gray-700">You scored {score} out of {total}</p>
         <div className="flex justify-center gap-4">
           <Link to="/select-category">
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors">Play Again</button>
+            <button className="px-6 py-3 text-lg font-bold text-white transition-colors bg-blue-500 rounded-lg hover:bg-blue-700">Play Again</button>
           </Link>
           <Link to="/home">
-            <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors">Go to Home</button>
+            <button className="px-6 py-3 text-lg font-bold text-white transition-colors bg-gray-500 rounded-lg hover:bg-gray-700">Go to Home</button>
           </Link>
         </div>
       </div>
